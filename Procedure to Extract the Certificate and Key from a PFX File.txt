@@ -1,0 +1,61 @@
+Procedure to Extract the Certificate and Key from a PFX File
+
+Hardware / Software Requirement:
+
+Unix / Linux Supported Machine
+WinSCP
+PFX file 
+Any Terminal applications such as putty, secureCRT, managessh, teraterm
+
+
+
+1. Place a request and get the PFX file from the App / Web team
+2. Open the folder where the PFX file is loaded
+3. Download the PFX file
+4. Copy the encryption Password of the file (to paste during the extraction)
+5. Log into Unix Machine via WinSCP
+6. Copy the downloaded PFX file to the Unix Machine
+7. Log into the Unix Machine via SecureCRT
+8. Verify the file is present in the copied directory
+		Run this command after entered in the specified directory 
+		ls >> to list the files in the folder
+9. Use the following command to extract the certificate, private key and any chain files (root) will be parsed and dumped into a single output file
+		openssl pkcs12 -in PKCS12file.pfx -out Output.txt
+		
+		Instead of PKCS12file.pfx type the name of the file (must be in pfx format)
+10. After entering the above command, will receive a prompt to enter the password
+		Enter Import Password: (this is the password that was used when the PKCS12 file was created - copied in step 4)
+		
+		MAC verified OK
+
+		Enter PEM pass phrase: (this is the private key password - use the same password copied in step 4)
+
+		Verifying - Enter PEM pass phrase: (confirm the private key password - use the same password copied from in step 4)
+		
+11. You can view the extracted contents in the output file
+		run the following command to view the text file
+		cat Output.txt
+12. To copy the certificate and key in separate file
+		open the output file
+		cat Output.txt
+		
+		copy the certificate content from  "-----BEGIN CERTIFICATE----- ..... -----END CERTIFICATE-----"
+		create a new file with .crt format and paste it and save it
+		vi certificate.crt 
+		Type i to insert
+		paste the copied content
+		press Escape >> type :wq >> press enter to save the file
+		
+		copy the private key content from  "-----BEGIN ENCRYPTED PRIVATE KEY----- ..... -----END ENCRYPTED PRIVATE KEY-----"
+		create a new file with .key format and paste it and save it
+		vi keys.key 
+		Type i to insert
+		paste the copied content
+		press Escape >> type :wq >> press enter to save the file
+
+13. To find the certificate expiry date run the following command
+		openssl x509 -in certificate.crt -text -noout | grep -i "Not"
+		
+		output be like
+            Not Before: Jun 22 00:00:00 2013 GMT
+            Not After : Jun 21 23:59:59 2022 GMT
